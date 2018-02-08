@@ -17,7 +17,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    CalenderView *view = [[CalenderView alloc] initWithFrame:self.view.frame startDay:@"2018-1-10" endDay:@"2019-1-10"];
+    CalenderView *view = [[CalenderView alloc] initWithFrame:self.view.frame startDay:@"2018-1-10" endDay:@"2019-2-8"];
     view.delegate = self;
     view.yearMonthFormat = @"%zd年%02zd月";
     view.actvityColor = YES;

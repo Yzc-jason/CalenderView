@@ -85,7 +85,7 @@ static NSString *const headerIdentifier = @"headerIdentifier";
                 string    = @"";
                 model.day = string;
             } else {
-                string    = [NSString stringWithFormat:@"%ld", j - firstDayInThisMounth + 1];
+                string    = [NSString stringWithFormat:@"%02ld", j - firstDayInThisMounth + 1];
                 model.day = string;
                 
                 NSString *dateStr = [NSString stringWithFormat:@"%zd-%02zd-%@",model.year, model.month, model.day];
