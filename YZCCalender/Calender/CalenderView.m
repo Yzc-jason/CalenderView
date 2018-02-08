@@ -61,12 +61,13 @@ static NSString *const headerIdentifier = @"headerIdentifier";
     }
     
     for (int i = 0; i < month; i++) {
-        int              month       = ((int)[NSDate month:self.startDay] + i)%12;
-        NSDateComponents *components = [[NSDateComponents alloc]init];
+        int              calcNumberMonth = (int)[NSDate month:self.startDay] + i;
+        int              month           = (calcNumberMonth)%12;
+        NSDateComponents *components     = [[NSDateComponents alloc]init];
         
         //获取下个月的年月日信息,并将其转为date
         components.month = month ? month : 12;
-        components.year  = [startArray[0] integerValue] + ((int)[NSDate month:self.startDay] + i)/12;
+        components.year  = [startArray[0] integerValue] + (calcNumberMonth == 12 ? 0 : calcNumberMonth) / 12;
         components.day   = 1;
         NSCalendar *calendar = [NSCalendar currentCalendar];
         NSDate     *nextDate = [calendar dateFromComponents:components];
@@ -88,22 +89,22 @@ static NSString *const headerIdentifier = @"headerIdentifier";
                 string    = [NSString stringWithFormat:@"%02ld", j - firstDayInThisMounth + 1];
                 model.day = string;
                 
-                NSString *dateStr = [NSString stringWithFormat:@"%zd-%02zd-%@",model.year, model.month, model.day];
+                NSString *dateStr = [NSString stringWithFormat:@"%zd-%02zd-%@", model.year, model.month, model.day];
                 if ([self isActivity:dateStr]) {
                     model.activityColor = [UIColor blackColor];
                 }
                 if (self.selectedDate.length) {
                     if ([NSDate isEqualBetweenWithDate:self.selectedDate toDate:dateStr]) {
-                        model.isSelected = YES;
+                        model.isSelected   = YES;
                         self.lastIndexPath = [NSIndexPath indexPathForRow:j inSection:i];
                     }
                     if ([NSDate isToday:dateStr]) {
                         model.isToday = YES;
                     }
-                }else{
+                } else {
                     if ([NSDate isToday:dateStr]) {
-                        model.isToday = YES;
-                        model.isSelected = YES;
+                        model.isToday      = YES;
+                        model.isSelected   = YES;
                         self.lastIndexPath = [NSIndexPath indexPathForRow:j inSection:i];
                     }
                 }
@@ -125,6 +126,7 @@ static NSString *const headerIdentifier = @"headerIdentifier";
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     CalenderModel *model = self.dataSource[indexPath.section][indexPath.item];
+    
     if (!model.day.length) {
         return;
     }
@@ -168,10 +170,10 @@ static NSString *const headerIdentifier = @"headerIdentifier";
         CalenderHeaderView *heardView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:headerIdentifier forIndexPath:indexPath];
         CalenderModel      *model     = self.dataSource[indexPath.section][indexPath.item];
         heardView.yearAndMonthLabel.text = [NSString stringWithFormat:self.yearMonthFormat.length ? self.yearMonthFormat : @"%zd年%zd月", model.year, model.month];
-        NSString *dateStr = [NSString stringWithFormat:@"%zd-%02zd",model.year, model.month];
+        NSString *dateStr = [NSString stringWithFormat:@"%zd-%02zd", model.year, model.month];
         if ([NSDate isCurrenMonth:dateStr]) {
             heardView.yearAndMonthLabel.textColor = [UIColor colorWithHexString:@"#00BB00"];
-        }else{
+        } else {
             heardView.yearAndMonthLabel.textColor = [UIColor blackColor];
         }
         return heardView;
@@ -180,31 +182,30 @@ static NSString *const headerIdentifier = @"headerIdentifier";
     return nil;
 }
 
-
 #pragma mark - set
--(void)setActvityColor:(BOOL)actvityColor {
+- (void)setActvityColor:(BOOL)actvityColor {
     [self.dataSource removeAllObjects];
     [self buildSource];
     [self.collectionView reloadData];
 }
 
 - (void)setWeekBottomLineColor:(UIColor *)weekBottomLineColor {
-    _weekBottomLineColor = weekBottomLineColor;
+    _weekBottomLineColor              = weekBottomLineColor;
     self.weekView.weekBottomLineColor = weekBottomLineColor;
 }
 
-
--(void)setShowWeekBottomLine:(BOOL)showWeekBottomLine {
-    _showWeekBottomLine = showWeekBottomLine;
+- (void)setShowWeekBottomLine:(BOOL)showWeekBottomLine {
+    _showWeekBottomLine    = showWeekBottomLine;
     self.weekView.showLine = showWeekBottomLine;
 }
 
 - (BOOL)isActivity:(NSString *)date {
     BOOL activity = NO;
     
-    NSTimeInterval startInterval = [NSDate timeIntervalFromDateString:[NSString stringWithFormat:@"%@ 00:00:00", self.startDay]];
-    NSTimeInterval endInterval = [NSDate timeIntervalFromDateString:[NSString stringWithFormat:@"%@ 00:00:00", self.endDay]];
+    NSTimeInterval startInterval   = [NSDate timeIntervalFromDateString:[NSString stringWithFormat:@"%@ 00:00:00", self.startDay]];
+    NSTimeInterval endInterval     = [NSDate timeIntervalFromDateString:[NSString stringWithFormat:@"%@ 00:00:00", self.endDay]];
     NSTimeInterval currentInterval = [NSDate timeIntervalFromDateString:[NSString stringWithFormat:@"%@ 00:00:00", date]];
+    
     if (currentInterval >= startInterval && currentInterval <= endInterval) {
         activity = YES;
     }
