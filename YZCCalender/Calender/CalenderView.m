@@ -66,7 +66,7 @@ static NSString *const headerIdentifier = @"headerIdentifier";
         
         //获取下个月的年月日信息,并将其转为date
         components.month = month ? month : 12;
-        components.year  = 2018 + i/12;
+        components.year  = [startArray[0] integerValue] + ((int)[NSDate month:self.startDay] + i)/12;
         components.day   = 1;
         NSCalendar *calendar = [NSCalendar currentCalendar];
         NSDate     *nextDate = [calendar dateFromComponents:components];
@@ -129,8 +129,13 @@ static NSString *const headerIdentifier = @"headerIdentifier";
         return;
     }
     
+    NSString *selectDate = [NSString stringWithFormat:@"%zd-%zd-%@", model.year, model.month, model.day];
+    if (![self isActivity:selectDate]) {
+        return;
+    }
+    
     if ([self.delegate respondsToSelector:@selector(calenderView:dateString:)]) {
-        [self.delegate calenderView:indexPath dateString:[NSString stringWithFormat:@"%zd-%zd-%@", model.year, model.month, model.day]];
+        [self.delegate calenderView:indexPath dateString:selectDate];
     }
     
     if (indexPath == self.lastIndexPath) {
